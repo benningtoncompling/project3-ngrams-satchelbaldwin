@@ -8,6 +8,6 @@ from utilities import *
 model = infile.readlines()
 generated = generate_from_ngram(model)
 formatted = format_generated(generated)
-#outfile.write(formatted)
-print(formatted)
+outfile.write(formatted)
+
 close_files(infile, outfile)
