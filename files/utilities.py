@@ -213,25 +213,59 @@ class Model:
                 while word == '<s>':
                     word = self.random_word_from_bigram(words[-1])
                 words.append(word)
-            print(f'{words}')
             sentences.append(words)
         return sentences
 
-    def generate_trigrams():
-        pass
-
-
-
+    def random_word_from_trigram(self, starting_bigram):
+        threshold = random.random()
+        counter = 0.0
+        current_trigram = None
+        for trigram in self.trigrams:
+            current_trigram = trigram[0]
+            current_bigram = (current_trigram[0], current_trigram[1])
+            if current_bigram == starting_bigram:
+                counter = counter + trigram[1]
+                if counter > threshold:
+                    return current_trigram[2]
+    def generate_trigrams(self, n):
+        sentences = []
+        for _ in range(n):
+            words = ['<s>']
+            start = self.random_word_from_bigram(words[-1])
+            while start == '<s>':
+                start = self.random_word_from_bigram(words[-1])
+            words.append(start)
+            while words[-1] != '</s>':
+                word = self.random_word_from_trigram((words[-2], words[-1]))
+                while word == '<s>':
+                    word = self.random_word_from_trigram((words[-2], words[-1]))
+                words.append(word)
+            sentences.append(words)
+        return sentences
 
 def generate_from_ngram(model_text): 
     model = Model(model_text)
-    model.generate_unigrams(2)
-    model.generate_bigrams(2)
-    generated = {}
-    return generated
+    s1 = model.generate_unigrams(10)
+    s2 = model.generate_bigrams(10)
+    s3 = model.generate_trigrams(10)
+    return (s1, s2, s3)
 
 def format_generated(generated):
-    pass
+    (s1, s2, s3) = generated
+    return ("""\
+\\1grams:
+{}
+
+\\2grams:
+{}
+
+\\3grams:
+{}""".format(
+    '\n'.join([' '.join(s) for s in s1]),
+    '\n'.join([' '.join(s) for s in s2]),
+    '\n'.join([' '.join(s) for s in s3]),
+    ))
+
 
 #
 # Part 3
